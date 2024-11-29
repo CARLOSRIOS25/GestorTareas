@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #eef2f3, #c3defc);
+            min-height: 100vh;
+            padding-top: 56px;
+        }
+        nav {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        nav .navbar-brand img {
+            margin-right: 10px;
+        }
+        .card-container {
+            margin-top: 20px;
+        }
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-floating {
+            background-color: #659dff;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1050;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        .btn-floating:hover {
+            background-color: #0056b3;
+        }
+        .filter-buttons {
+            margin-bottom: 20px;
+        }
+        .btn-filter {
+            margin-right: 10px;
+        }
+        .scroll-buttons {
+            position: fixed;
+            bottom: 80px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        #prevBtn, #nextBtn {
+            background-color: #659dff;
+            color: white;
+            font-size: 16px;
+            z-index: 1050;
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/usuarios/userPage">
+            <img src="/images/comprobacion.png" alt="Logo" width="40" height="40"> Task Manager
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/usuarios/userPage">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Acerca de</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container card-container">
+    <h1 class="text-success mb-3">CATEGORIAS</h1>
+    <p class="lead text-muted">Organiza tus tareas pendientes por categoría.</p>
+    <div class="scroll-buttons">
+        <button id="prevBtn" style="top: 50%; left: 200px; transform: translateY(-50%);" class="btn btn-primary position-fixed">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <button id="nextBtn" style="top: 50%; right: 200px; transform: translateY(-50%);" class="btn btn-primary position-fixed">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+    <div class="filter-buttons d-flex flex-wrap">
+        <a th:href="@{/tareas/fechaFin}" class="btn btn-info btn-filter">
+            <i class="bi bi-calendar"></i> Fecha
+        </a>
+        <a th:href="@{/tareas/prioridad}" class="btn btn-warning btn-filter">
+            <i class="bi bi-exclamation-triangle"></i> Prioridad
+        </a>
+        <a th:href="@{/tareas/categoria}" class="btn btn-success btn-filter">
+            <i class="bi bi-tags"></i> Categoría
+        </a>
+        <a th:href="@{/tareas/usuario}" class="btn btn-secondary btn-filter">
+            <i class="bi bi-person"></i> Usuario
+        </a>
+        <a th:href="@{/tareas/page}" class="btn btn-dark btn-filter">
+            <i class="bi bi-eye"></i> Todas
+        </a>
+    </div>
+    <div class="row flex-nowrap overflow-auto">
+        <!-- Columna de Tareas Pendientes -->
+        <div class="col-md-6">
+            <h3 class="text-Dark">Personal</h3>
+            <div class="row">
+                <div th:each="tareasPersonal : ${tareasPersonal}" class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title p-3 rounded text-light text-center" th:classappend="${tareasPersonal.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasPersonal.getPrioridad() == 'MEDIA' ? 'bg-warning' : 'bg-success')}" th:text="${tareasPersonal.nombre}"></h5>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="${tareasPersonal.categoria}"></h6>
+                            <p class="card-text" th:text="${tareasPersonal.descripcion}"></p>
+
+                            <!-- Información adicional -->
+                            <ul class="list-unstyled">
+                                <li><strong>Prioridad:</strong>
+                                    <span class="badge"
+                                          th:classappend="${tareasPersonal.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasPersonal.getPrioridad() == 'MEDIA' ? 'bg-warning text-dark' : 'bg-success')}"
+                                          th:text="${tareasPersonal.getPrioridad()}"></span>
+                                </li>
+                                <li><strong>Creada el:</strong> <span th:text="${tareasPersonal.fechaCreacion}"></span></li>
+                                <li><strong>Estado:</strong> <span th:text="${tareasPersonal.estado}"></span></li>
+                                <li><strong>Usuario asignado:</strong>
+                                    <span th:text="${tareasPersonal.usuarioAsignado?.nombre} + ' ' + ${tareasPersonal.usuarioAsignado?.apellido}"></span>
+                                </li>
+                                <li><strong>Fecha Fin:</strong> <span th:text="${tareasPersonal.fechaFin}"></span></li>
+                            </ul>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a class="btn btn-danger " th:href="@{'/tareas/eliminar/' + ${tareasPersonal.id}}">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3 class="text-primary">Trabajo</h3>
+            <div class="row">
+                <div th:each="tareasTrabajo : ${tareasTrabajo}" class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title p-3 rounded text-light text-center" th:classappend="${tareasTrabajo.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasTrabajo.getPrioridad() == 'MEDIA' ? 'bg-warning' : 'bg-success')}" th:text="${tareasTrabajo.nombre}"></h5>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="${tareasTrabajo.categoria}"></h6>
+                            <p class="card-text" th:text="${tareasTrabajo.descripcion}"></p>
+
+                            <!-- Información adicional -->
+                            <ul class="list-unstyled">
+                                <li><strong>Prioridad:</strong>
+                                    <span class="badge"
+                                          th:classappend="${tareasTrabajo.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasTrabajo.getPrioridad() == 'MEDIA' ? 'bg-warning text-dark' : 'bg-success')}"
+                                          th:text="${tareasTrabajo.getPrioridad()}"></span>
+                                </li>
+                                <li><strong>Creada el:</strong> <span th:text="${tareasTrabajo.fechaCreacion}"></span></li>
+                                <li><strong>Estado:</strong> <span th:text="${tareasTrabajo.estado}"></span></li>
+                                <li><strong>Usuario asignado:</strong>
+                                    <span th:text="${tareasTrabajo.usuarioAsignado?.nombre} + ' ' + ${tareasTrabajo.usuarioAsignado?.apellido}"></span>
+                                </li>
+                                <li><strong>Fecha Fin:</strong> <span th:text="${tareasTrabajo.fechaFin}"></span></li>
+                            </ul>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a class="btn btn-danger " th:href="@{'/tareas/eliminar/' + ${tareasTrabajo.id}}">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3 class="text-Dark">Universidad</h3>
+            <div class="row">
+                <div th:each="tareasUniversidad : ${tareasUniversidad}" class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title p-3 rounded text-light text-center" th:classappend="${tareasUniversidad.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasUniversidad.getPrioridad() == 'MEDIA' ? 'bg-warning' : 'bg-success')}" th:text="${tareasUniversidad.nombre}"></h5>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="${tareasUniversidad.categoria}"></h6>
+                            <p class="card-text" th:text="${tareasUniversidad.descripcion}"></p>
+
+                            <!-- Información adicional -->
+                            <ul class="list-unstyled">
+                                <li><strong>Prioridad:</strong>
+                                    <span class="badge"
+                                          th:classappend="${tareasUniversidad.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasUniversidad.getPrioridad() == 'MEDIA' ? 'bg-warning text-dark' : 'bg-success')}"
+                                          th:text="${tareasUniversidad.getPrioridad()}"></span>
+                                </li>
+                                <li><strong>Creada el:</strong> <span th:text="${tareasUniversidad.fechaCreacion}"></span></li>
+                                <li><strong>Estado:</strong> <span th:text="${tareasUniversidad.estado}"></span></li>
+                                <li><strong>Usuario asignado:</strong>
+                                    <span th:text="${tareasUniversidad.usuarioAsignado?.nombre} + ' ' + ${tareasUniversidad.usuarioAsignado?.apellido}"></span>
+                                </li>
+                                <li><strong>Fecha Fin:</strong> <span th:text="${tareasUniversidad.fechaFin}"></span></li>
+                            </ul>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a class="btn btn-danger " th:href="@{'/tareas/eliminar/' + ${tareasUniversidad.id}}">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3 class="text-primary">Colegio</h3>
+            <div class="row">
+                <div th:each="tareasColegio : ${tareasColegio}" class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title p-3 rounded text-light text-center" th:classappend="${tareasColegio.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasColegio.getPrioridad() == 'MEDIA' ? 'bg-warning' : 'bg-success')}" th:text="${tareasColegio.nombre}"></h5>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="${tareasColegio.categoria}"></h6>
+                            <p class="card-text" th:text="${tareasColegio.descripcion}"></p>
+
+                            <!-- Información adicional -->
+                            <ul class="list-unstyled">
+                                <li><strong>Prioridad:</strong>
+                                    <span class="badge"
+                                          th:classappend="${tareasColegio.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasColegio.getPrioridad() == 'MEDIA' ? 'bg-warning text-dark' : 'bg-success')}"
+                                          th:text="${tareasColegio.getPrioridad()}"></span>
+                                </li>
+                                <li><strong>Creada el:</strong> <span th:text="${tareasColegio.fechaCreacion}"></span></li>
+                                <li><strong>Estado:</strong> <span th:text="${tareasColegio.estado}"></span></li>
+                                <li><strong>Usuario asignado:</strong>
+                                    <span th:text="${tareasColegio.usuarioAsignado?.nombre} + ' ' + ${tareasColegio.usuarioAsignado?.apellido}"></span>
+                                </li>
+                                <li><strong>Fecha Fin:</strong> <span th:text="${tareasColegio.fechaFin}"></span></li>
+                            </ul>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a class="btn btn-danger " th:href="@{'/tareas/eliminar/' + ${tareasColegio.id}}">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3 class="text-Dark">Otras</h3>
+            <div class="row">
+                <div th:each="tareasOtro : ${tareasOtro}" class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title p-3 rounded text-light text-center" th:classappend="${tareasOtro.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasOtro.getPrioridad() == 'MEDIA' ? 'bg-warning' : 'bg-success')}" th:text="${tareasOtro.nombre}"></h5>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="${tareasOtro.categoria}"></h6>
+                            <p class="card-text" th:text="${tareasOtro.descripcion}"></p>
+
+                            <!-- Información adicional -->
+                            <ul class="list-unstyled">
+                                <li><strong>Prioridad:</strong>
+                                    <span class="badge"
+                                          th:classappend="${tareasOtro.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                       (tareasOtro.getPrioridad() == 'MEDIA' ? 'bg-warning text-dark' : 'bg-success')}"
+                                          th:text="${tareasOtro.getPrioridad()}"></span>
+                                </li>
+                                <li><strong>Creada el:</strong> <span th:text="${tareasOtro.fechaCreacion}"></span></li>
+                                <li><strong>Estado:</strong> <span th:text="${tareasOtro.estado}"></span></li>
+                                <li><strong>Usuario asignado:</strong>
+                                    <span th:text="${tareasOtro.usuarioAsignado?.nombre} + ' ' + ${tareasOtro.usuarioAsignado?.apellido}"></span>
+                                </li>
+                                <li><strong>Fecha Fin:</strong> <span th:text="${tareasOtro.fechaFin}"></span></li>
+                            </ul>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a class="btn btn-danger " th:href="@{'/tareas/eliminar/' + ${tareasOtro.id}}">
+                                    <i class="bi.bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<a href="/tareas/formTarea" class="btn btn-primary btn-floating">
+    <i class="bi bi-plus"></i>
+</a>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Lógica para botones de scroll
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const container = document.querySelector(".row.flex-nowrap");
+
+    prevBtn.addEventListener("click", () => {
+        container.scrollBy({ left: -660, behavior: "smooth" });
+    });
+
+    nextBtn.addEventListener("click", () => {
+        container.scrollBy({ left: 660, behavior: "smooth" });
+    });
+</script>
+</body>
+</html>
+

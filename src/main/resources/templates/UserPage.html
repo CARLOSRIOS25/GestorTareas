@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/estilos.css}">
+    <style>
+        body {
+            background: linear-gradient(to right, #eef2f3, #c3defc);
+            min-height: 100vh;
+        }
+        .main-container {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #5470d0;
+            border-bottom: 2px solid #5470d0;
+            margin-bottom: 15px;
+        }
+        .task-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .task-card .card-title {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .btn-add-task {
+            background-color: #5470d0;
+            color: white;
+            border: none;
+        }
+        .btn-add-task:hover {
+            background-color: #4158b4;
+        }
+        .welcome-message {
+            background-color: #f8f9fa;
+            padding: 50px 0;
+        }
+
+        .btn-salir {
+            position: absolute;
+            top: 5px;
+            left: 15px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+<a href="/" class="btn btn-dark m-3 float-left btn-salir"><i class="bi bi-box-arrow-right"></i> Cerrar Sesion</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/usuarios/userPage">
+            <img src="/images/comprobacion.png" alt="Logo" width="40" height="40"> Task Manager
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/usuarios/userPage">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Acerca de</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<section class="hero-section text-center py-5 bg-light">
+    <div class="container">
+        <h1 class="display-4">Bienvenido a Task Manager</h1>
+        <p class="lead text-muted">Organiza, planifica y completa tus tareas de manera eficiente.</p>
+        <!-- Botón para redirigir a la página de tareas -->
+        <a href="/tareas/page" class="btn btn-primary btn-lg mt-4">
+            <i class="bi bi-arrow-right-circle"></i> Ver Tareas
+        </a>
+    </div>
+</section>
+
+<section>
+<div class="container main-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">Panel de Tareas</h1>
+    </div>
+
+    <div class="row">
+        <!-- Columna izquierda: Listar tareas -->
+        <div class="col-md-6">
+            <div class="section">
+                <div class="section-title">Tareas</div>
+                <div class="task-card" th:each="tareasAVencer : ${tareasAVencer}">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="text-secondary" th:text="${tareasAVencer.nombre}"></h5>
+                        <p th:text="${tareasAVencer.fechaFin}"></p>
+                    </div>
+                    <span class="badge" th:classappend="${tareasAVencer.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                          (tareasAVencer.getPrioridad() == 'MEDIA' ? 'bg-warning text-dark' : 'bg-success')}"
+                          th:text="${tareasAVencer.getPrioridad()}"></span>
+
+                </div>
+                <!-- Botón para agregar nuevas tareas -->
+                <a href="/tareas/formTarea" class="btn btn-add-task w-100 mt-3"><i class="bi bi-plus-circle"></i> Agregar Tarea </a>
+            </div>
+        </div>
+
+        <!-- Columna derecha: Lista de usuarios y otras secciones -->
+        <div class="col-md-6">
+            <!-- Lista de usuarios asignados -->
+            <div class="section mb-4">
+                <div class="section-title">Usuarios Asignados</div>
+                <ul class="list-group" th:each="usuarios : ${usuarios}">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span th:text="${usuarios.nombre} + ' ' + ${usuarios.apellido}"></span>
+                        <span class="badge bg-primary rounded-pill"></span>
+                    </li>
+                </ul>
+            </div>
+            <!-- Otras secciones: Espacio reservado -->
+            <div class="section">
+                <div class="section-title">Resumen de Actividades</div>
+                <div class="task-card">
+                    <p><i class="bi bi-list text-primary">
+                        <span th:text="${totalTareas} + ' - tareas totales.'" class="text-dark"></span></i>
+                    </p>
+                    <p><i class="bi bi-check-circle text-success">
+                        <span th:text="${tareasCompletadas} + ' - tareas completadas.'" class="text-dark"></span></i>
+                    </p>
+                    <p><i class="bi bi-hourglass-split text-warning">
+                        <span th:text="${tareasPendientes} + ' - tareas pendientes.'" class="text-dark"></span></i>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<section class="welcome-message text-center py-5">
+    <div class="container">
+        <h2>Gestión Simplificada para tus Tareas Diarias</h2>
+        <p>Con Task Manager, puedes gestionar tus tareas de manera sencilla y personalizada. Añade, edita y organiza tus actividades en un solo lugar.</p>
+    </div>
+</section>
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3">
+    <p>&copy; 2024 Task Manager. Todos los derechos reservados.</p>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

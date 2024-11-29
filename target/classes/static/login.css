@@ -1,0 +1,79 @@
+/* Fondo con gradiente */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo de la tarjeta de loginUser */
+#login-card {
+    border: none;
+    border-radius: 10px;
+    max-width: 450px;
+    background-color: #ffffff;
+    padding: 30px;
+}
+
+#login-card h3 {
+    color: #333;
+    font-weight: 700;
+}
+
+#login-card p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.app-icon i {
+    color: #5470d0;
+}
+
+/* Estilo del input */
+.input-group-text {
+    background-color: #e8eaf6;
+    border: none;
+    color: #5470d0;
+}
+
+.form-control {
+    border: none;
+    background-color: #f7f8fc;
+    padding-left: 10px;
+    font-size: 0.95rem;
+    border-radius: 0;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #5470d0;
+}
+
+/* Botón de loginUser */
+.btn-primary {
+    background-color: #5470d0;
+    border: none;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #4153a5;
+}
+
+/* Link de registro */
+a {
+    color: #5470d0;
+}
+
+a:hover {
+    color: #4153a5;
+}
+
+/* Animación en hover del botón */
+.login-button {
+    font-size: 1rem;
+    transition: transform 0.3s;
+}
+
+.login-button:hover {
+    transform: scale(1.02);
+}

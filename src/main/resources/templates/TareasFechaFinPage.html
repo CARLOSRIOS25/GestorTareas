@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #eef2f3, #c3defc);
+            min-height: 100vh;
+        }
+        nav .navbar-brand img {
+            margin-right: 10px;
+        }
+        nav {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .card-container {
+            margin-top: 20px;
+        }
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .card-complete{
+            background-color: #e9e9ff;
+        }
+        .task-card .badge {
+            font-size: 0.9rem;
+        }
+        .btn-floating {
+            background-color: #659dff;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1050;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        .btn-floating:hover {
+            background-color: #0056b3;
+        }
+        .btn-completarTodo {
+            background-color: #5470d0;
+            color: white;
+            border: none;
+            transition: transform 0.3s, box-shadow 0.2s;
+        }
+
+        .btn-completarTodo:hover {
+            background-color: #ffffff;
+            color: #5470d0;
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .filter-buttons {
+            margin-bottom: 20px;
+        }
+        .btn-filter {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/usuarios/userPage">
+            <img src="/images/comprobacion.png" alt="Logo" width="40" height="40"> Task Manager
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/usuarios/userPage">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Acerca de</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container card-container">
+    <h1 class="text-info mb-3">Fecha Vencimiento</h1>
+    <p class="lead text-muted">Organiza tus prontas a vencer.</p>
+    <div class="filter-buttons">
+        <a th:href="@{/tareas/fechaFin}" class="btn btn-info btn-filter">
+            <i class="bi bi-calendar"></i> Fecha
+        </a>
+        <a th:href="@{/tareas/prioridad}" class="btn btn-warning btn-filter">
+            <i class="bi bi-exclamation-triangle"></i> Prioridad
+        </a>
+        <a th:href="@{/tareas/categoria}" class="btn btn-success btn-filter">
+            <i class="bi bi-tags"></i> Categoria
+        </a>
+        <a th:href="@{/tareas/usuario}" class="btn btn-secondary btn-filter">
+            <i class="bi bi-person"></i> Usuario
+        </a>
+        <a th:href="@{/tareas/page}" class="btn btn-dark btn-filter">
+            <i class="bi bi-eye"></i> Todas
+        </a>
+        <a class="btn btn-sm p-3 m-3 btn-completarTodo" th:href="@{/tareas/completarTodas}">
+            COMPLETAR TODAS <i class="bi bi-check"></i>
+        </a>
+    </div>
+    <div class="row">
+        <!-- Columna de Tareas Pendientes -->
+        <div class="col-md-6">
+            <h3 class="text-warning">Tareas Pendientes</h3>
+            <div class="row">
+                <div th:each="tareasPendientes : ${tareasPendientes}" class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title p-3 rounded text-light text-center" th:classappend="${tareasPendientes.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                           (tareasPendientes.getPrioridad() == 'MEDIA' ? 'bg-warning' : 'bg-success')}" th:text="${tareasPendientes.nombre}"></h5>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="${tareasPendientes.categoria}"></h6>
+                            <p class="card-text" th:text="${tareasPendientes.descripcion}"></p>
+
+                            <!-- Información adicional -->
+                            <ul class="list-unstyled">
+                                <li><strong>Prioridad:</strong>
+                                    <span class="badge"
+                                          th:classappend="${tareasPendientes.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                           (tareasPendientes.getPrioridad() == 'MEDIA' ? 'bg-warning text-dark' : 'bg-success')}"
+                                          th:text="${tareasPendientes.getPrioridad()}"></span>
+                                </li>
+                                <li><strong>Creada el:</strong> <span th:text="${tareasPendientes.fechaCreacion}"></span></li>
+                                <li><strong>Estado:</strong> <span th:text="${tareasPendientes.estado}"></span></li>
+                                <li><strong>Usuario asignado:</strong>
+                                    <span th:text="${tareasPendientes.usuarioAsignado?.nombre} + ' ' + ${tareasPendientes.usuarioAsignado?.apellido}"></span>
+                                </li>
+                                <li><strong>Fecha Fin:</strong> <span th:text="${tareasPendientes.fechaFin}"></span></li>
+                            </ul>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a class="btn btn-success" th:href="@{'/tareas/completar/' + ${tareasPendientes.id}}">
+                                    <i class="bi bi-check"></i> Completar
+                                </a>
+                                <a class="btn btn-danger " th:href="@{'/tareas/eliminar/' + ${tareasPendientes.id}}">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna de Tareas Completadas -->
+        <div class="col-md-6">
+            <h3 class="text-success">Tareas Completadas</h3>
+            <div class="row">
+                <div th:each="tareasCompletadas : ${tareasCompletadas}" class="col-12 mb-4">
+                    <div class="card card-complete">
+                        <div class="card-body">
+                            <h5 class="card-title p-3 rounded text-light text-center" th:classappend="${tareasCompletadas.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                           (tareasCompletadas.getPrioridad() == 'MEDIA' ? 'bg-warning' : 'bg-success')}" th:text="${tareasCompletadas.nombre}"></h5>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="${tareasCompletadas.categoria}"></h6>
+                            <p class="card-text" th:text="${tareasCompletadas.descripcion}"></p>
+
+                            <!-- Información adicional -->
+                            <ul class="list-unstyled">
+                                <li><strong>Prioridad:</strong>
+                                    <span class="badge"
+                                          th:classappend="${tareasCompletadas.getPrioridad() == 'ALTA' ? 'bg-danger' :
+                                                           (tareasCompletadas.getPrioridad() == 'MEDIA' ? 'bg-warning text-dark' : 'bg-success')}"
+                                          th:text="${tareasCompletadas.getPrioridad()}"></span>
+                                </li>
+                                <li><strong>Creada el:</strong> <span th:text="${tareasCompletadas.fechaCreacion}"></span></li>
+                                <li><strong>Estado:</strong> <span th:text="${tareasCompletadas.estado}"></span></li>
+                                <li><strong>Usuario asignado:</strong>
+                                    <span th:text="${tareasCompletadas.usuarioAsignado?.nombre} + ' ' + ${tareasCompletadas.usuarioAsignado?.apellido}"></span>
+                                </li>
+                                <li><strong>Fecha Fin:</strong> <span th:text="${tareasCompletadas.fechaFin}"></span></li>
+                            </ul>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a class="btn btn-danger " th:href="@{'/tareas/eliminar/' + ${tareasCompletadas.id}}">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botón flotante para agregar tarea -->
+<a href="/tareas/formTarea" class="btn btn-primary btn-floating">
+    <i class="bi bi-plus"></i>
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

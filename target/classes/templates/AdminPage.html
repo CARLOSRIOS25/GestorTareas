@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrador - Gestión de Usuarios y Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/estilos.css}">
+    <style>
+        /* Fondo general */
+        body {
+            background: linear-gradient(to right, #dbfbfe, #ffffff);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Contenedor principal */
+        .main-container {
+            margin-top: 30px;
+        }
+
+        /* Títulos de secciones */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28527a;
+            border-bottom: 3px solid #28527a;
+            margin-bottom: 20px;
+        }
+
+        /* Tarjetas */
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            border: none;
+        }
+
+        /* Botón principal */
+        .btn-add {
+            background-color: #28527a;
+            color: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            background-color: #1b3e5d;
+            transform: scale(1.05);
+            color: white;
+        }
+
+        /* Listas de usuarios y tareas */
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Botón eliminar */
+        .btn-danger {
+            background-color: #d9534f;
+            border-color: #d9534f;
+        }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
+            border-color: #ac2925;
+        }
+
+        /* Botón completar */
+        .btn-success {
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+        }
+
+        .btn-success:hover {
+            background-color: #449d44;
+            border-color: #398439;
+        }
+
+        /* Tablas y listas */
+        ul.list-group {
+            font-size: 1rem;
+        }
+
+        /* Enlaces */
+        a {
+            text-decoration: none;
+        }
+
+        /* Botón cerrar sesión */
+        .btn-dark {
+            border-radius: 25px;
+            font-size: 0.9rem;
+            padding: 10px 15px;
+        }
+
+        /* Hover en filas de las listas */
+        .list-group-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Botón agregar tarea */
+        .btn-add i {
+            margin-right: 8px;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container main-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">Panel de Administración</h1>
+        <a href="/" class="btn btn-dark">Cerrar Sesión</a>
+    </div>
+
+    <div class="row">
+        <!-- Columna izquierda: Gestión de Usuarios -->
+        <div class="col-md-6">
+            <div class="section">
+                <div class="section-title">Gestión de Usuarios</div>
+                <div class="card p-3">
+                    <form th:action="@{/usuarios/agregar}" method="post">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre de Usuario</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Escribe el nombre del usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="apellido" class="form-label">Apellido de Usuario</label>
+                            <input type="text" id="apellido" name="apellido" class="form-control" placeholder="Escribe el apellido del usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Correo Electrónico</label>
+                            <input type="email" id="correo" name="correo" class="form-control" placeholder="Escribe el correo del usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Telefono Usuario</label>
+                            <input type="text" id="telefono" name="telefono" class="form-control" placeholder="Digite el telefono del usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="admin" class="form-label">Rol</label>
+                            <select id="admin" name="admin" class="form-select" required>
+                                <option value="" disabled selected>Selecciona el rol</option>
+                                <option value="true">Administrador</option>
+                                <option value="false">Usuario</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Digite el username del usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="text" id="password" name="password" class="form-control" placeholder="Digite la contraseña del usuario" required>
+                        </div>
+                        <button type="submit" class="btn btn-add w-100"><i class="bi bi-person-plus"></i> Agregar Usuario</button>
+                    </form>
+                </div>
+                <div class="mt-4">
+                    <h5 class="section-title">Usuarios Registrados</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><strong>Nombre</strong></span>
+                            <span><strong>Rol</strong></span>
+                            <span><strong>Borrar</strong></span>
+                        </li>
+                        <li th:each="usuario : ${usuarios}" class="list-group-item d-flex justify-content-between align-items-center">
+                            <span th:text="${usuario.nombre} + ' ' + ${usuario.apellido}"></span>
+                            <span th:text="${usuario.getRole()}"></span>
+                           <a class="btn btn-danger btn-sm" th:href="@{'/usuarios/eliminar/' + ${usuario.id}}"><i class="bi bi-trash"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: Gestión de Tareas -->
+        <div class="col-md-6">
+            <div class="section">
+                <div class="section-title">Gestión de Tareas</div>
+                <div class="card p-3">
+                    <h5 class="mb-3">Tareas Activas</h5>
+                    <ul class="list-group mb-3">
+                        <!-- Cabecera -->
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                            <span><strong>Nombre</strong></span>
+                            <span><strong>Acciones</strong></span>
+                        </li>
+
+                        <!-- Lista de tareas -->
+                        <li th:each="tarea : ${tareas}"
+                            class="list-group-item d-flex justify-content-between align-items-center">
+                            <!-- Nombre de la tarea con etiqueta de prioridad -->
+                            <span>
+                                <span th:text="${tarea.nombre}"></span> -
+                                <span class="badge"
+                                      th:classappend="${tarea.getPrioridad() == 'ALTA' ? 'bg-danger' : (tarea.getPrioridad() == 'MEDIA' ? 'bg-warning' : (tarea.getPrioridad() == 'BAJA' ? 'bg-success' : ''))}"
+                                      th:text="'PRIORIDAD ' + ${tarea.prioridad}">
+                                </span>
+                            </span>
+                            <!-- Botones de acción -->
+                            <div>
+                                <a class="btn btn-success btn-sm me-2" th:href="@{'/tareas/adminCompletar/' + ${tarea.id}}">
+                                    <i class="bi bi-check"></i> Completar
+                                </a>
+                                <a class="btn btn-danger btn-sm" th:href="@{'/tareas/adminEliminar/' + ${tarea.id}}">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                    <a href="/tareas/formTareaAdmin" class="btn btn-add w-100 mt-3"><i class="bi bi-plus-circle"></i> Agregar Tarea </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

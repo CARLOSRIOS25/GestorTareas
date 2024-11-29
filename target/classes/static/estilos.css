@@ -1,0 +1,45 @@
+/* Estilo de fondo */
+body {
+    background-color: #f5f7fa;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #f3f4f6, #dbe0ff);
+    color: #333;
+}
+
+.navbar-brand img {
+    margin-right: 10px;
+}
+
+.welcome-message h2 {
+    color: #5470d0;
+}
+
+.btn-outline-primary {
+    color: #5470d0;
+    border-color: #5470d0;
+}
+
+.btn-outline-primary:hover {
+    background-color: #5470d0;
+    color: white;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+/* Asegurarse de que tanto html como body ocupen toda la altura de la pantalla */
+html, body {
+    height: 100%;  /* Establece que ambos elementos tomen el 100% de la altura de la ventana */
+    margin: 0;     /* Elimina cualquier margen por defecto */
+}
+
+body {
+    display: flex;  /* Establece un contenedor flexible */
+    flex-direction: column;  /* Establece la dirección de los elementos hijos */
+}
+
